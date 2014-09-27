@@ -1,0 +1,42 @@
+{% extends 'main/generic.html' %}
+{% load staticfiles %}
+{% block head %}
+	<link rel="stylesheet" href="{% static 'main/css/about.css' %}">
+{% endblock %}
+{% block title %}about{% endblock %}
+{% block content%}
+<div class="pure-u-1 pure-u-md-1-2">
+	<div class="skin-about-left">
+		<h2 class="skin-header">me</h2>
+		<div class="holder">
+			<img class="me" src="{% static 'main/img/me.png' %}"></img>
+		</div>
+		<p>i am a currently a performance engineer, working in oracle</p>
+		<p>i have a strong interest in coding, and a small interest in web design</p>
+		<p>i play a heck of a lot of computer games, and i really like weird co-op indie games</p>
+	</div>
+</div>
+<div class="pure-u-1 pure-u-md-1-2">
+	<div class="skin-about-right skin-about-top">
+		<h2 class="skin-header">website</h2>
+		<p>
+			This website has been generated using a lovely combination of <a target="_blank" href="https://www.djangoproject.com/">django</a> and <a target="_blank" href="https://purecss.io">pure</a>
+		</p>
+		<p>
+		django serves the webpages, and is the reason i can have lovely urls, which i don't currently use
+		</p>
+		<p>
+			pure, on the other hand, delivers the aesthetic for the site, and is especially useful for making the site responsive (eh, mobile users?)
+		</p>
+		<p>
+			i think most of all, this site is a work in progress, so it might look terrible, and it might not work
+		</p>
+	</div>
+	<div class="skin-about-right skin-about-bottom">
+		<h2 class="skin-header">links</h2>
+		<p>
+			what, do you think i'm some king of links? get out of here
+		</p>
+</div>
+</div>
+{% endblock%}
