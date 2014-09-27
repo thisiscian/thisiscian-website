@@ -3,3 +3,4 @@
 *.pyc
 *~
 thisiscian/settings.py
+manage.py
