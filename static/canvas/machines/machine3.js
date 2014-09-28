@@ -37,17 +37,22 @@ function invertColor(hexTripletColor) {
     return color;
 } 
 
-if (!HTMLCollection.prototype.last){
-	HTMLCollection.prototype.last = function(){
-		return this[this.length - 1];
-	};
+
+function last(list) {
+	return list[list.length-1]
 }
 
 CanvasRenderingContext2D.prototype.strokeLine=function(a,b,c,d) {
-		this.beginPath()
-		this.moveTo(a,b)
-		this.lineTo(c,d)
-		this.stroke()
+	this.beginPath()
+	this.moveTo(a,b)
+	this.lineTo(c,d)
+	this.stroke()
+}
+
+CanvasRenderingContext2D.prototype.strokeCircle=function(a,b,c) {
+	this.beginPath()
+	this.arc(a,b,c,0,2*Math.PI)
+	this.stroke()
 }
 
 var Machine={
@@ -84,7 +89,7 @@ Machine.add=function() {
 	Machine._names[Machine.length]=pa["machineName"]
 	Machine.children.push(new Machine.types[pa["machineName"]]())
 	var child=Machine.children[Machine.length]
-	child.container=document.getElementsByTagName("script").last().parentNode;
+	child.container=last(document.getElementsByTagName("script")).parentNode;
 	child.canvas=document.createElement("canvas");
 	child.container.appendChild(child.canvas)
 	child.context=child.canvas.getContext('2d')
@@ -92,6 +97,7 @@ Machine.add=function() {
 	child.canvas.height=child.container.offsetHeight
 	child.w=child.canvas.width
 	child.h=child.canvas.height
+	child.L=Math.max(child.h,child.w)
 	if(pa["variables"]) {
 		for(variable in pa["variables"]) {
 			if(child.adjustable[variable]) {
