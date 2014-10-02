@@ -3,6 +3,7 @@ from django.contrib import admin
 
 urlpatterns = patterns('',
     url(r'^canvas/', include('canvas.urls')),
+    url(r'^plannr/', include('plannr.urls')),
     url(r'^', include('main.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
