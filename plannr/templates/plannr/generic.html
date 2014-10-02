@@ -1,0 +1,13 @@
+{% load staticfiles %}
+<html>
+	<head>
+		<title>plannr - {% block title %}{%endblock%}</title>
+<!--		<link rel="stylesheet" href="{% static 'main/css/skin-dark.css' %}"> -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="icon" type="image/png" href="{% static 'main/img/logo_black.png' %}">
+		{% block head %}{% endblock %}
+	</head>
+	<body class="pure-skin-dark">
+	{% block content %}
+	{% endblock %}
+</html>
