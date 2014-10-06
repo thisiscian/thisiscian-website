@@ -1,7 +1,6 @@
 /**
  * @constructor
  */
-
 function beam() {
 	var this_=this;
 	this_.adjustable={
@@ -101,4 +100,12 @@ function beam() {
 	}
 }
 
-Machine.types["beam"]=beam
+function beamInstall() {
+	if(Machine===undefined) {
+		setTimeout(beamInstall, 100)
+	} else {
+		Machine.types["beam"]=beam
+	}
+}
+
+beamInstall()

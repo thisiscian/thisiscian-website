@@ -2,6 +2,7 @@
 *.swp
 *.pyc
 *~
+*.lnk
 thisiscian/settings.py
 manage.py
 static/*

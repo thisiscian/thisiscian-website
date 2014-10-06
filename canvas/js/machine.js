@@ -1,3 +1,4 @@
+if(typeof Machine === 'undefined') {
 // parse arguments like python
 function pyarg(args, argument) {
 	var i=0, fields=[], pyargs={}
@@ -5,7 +6,7 @@ function pyarg(args, argument) {
 		fields.push(key)
 	}
 	for (var arg in argument) {
-		split=typeof argument[arg] != typeof {} ? argument[arg].split("=") : []
+		split=typeof argument[arg] != typeof {} && typeof argument[arg] != typeof [] ? (""+argument[arg]).split("=") : []
 		// if arg is definite, i.e. "field=value", and the field is recognised
 		// and the field hasn't already been defined, then define it, and
 		// prevent indefinite arguments
@@ -27,6 +28,8 @@ function pyarg(args, argument) {
 	return pyargs
 }
 
+Math.TAU=2*Math.PI
+
 function invertColor(hexTripletColor) {
     var color = hexTripletColor.substring(1);
     color = parseInt(color, 16);          // convert to integer
@@ -37,21 +40,48 @@ function invertColor(hexTripletColor) {
     return color;
 } 
 
-
-function last(list) {
-	return list[list.length-1]
+function last(list) { return list[list.length-1] }
+function checkDefined(x,props) {
+	for(var index in props) {
+		var prop=props[index]
+		if(typeof x[prop] === 'undefined') return false
+	}
+	return true
 }
 
-CanvasRenderingContext2D.prototype.strokeLine=function(a,b,c,d) {
+
+CanvasRenderingContext2D.prototype.strokeLine=function() {
+	var pA=pyarg({"a":undefined,"b":undefined,"c":undefined,"d":undefined},arguments)
+	if (checkDefined(pA,["a","b"]) && ! checkDefined(pA,["c","d"])) {
+		var a=pA["a"][0]
+		var b=pA["a"][1]
+		var c=pA["b"][0]
+		var d=pA["b"][1]	
+	} else if(checkDefined(pA,["a","b","c","d"])) {
+		var a=pA["a"]
+		var b=pA["b"]
+		var c=pA["c"]
+		var d=pA["d"]
+	} else {
+			console.log(pA, checkDefined(pA,["a","b"]), ! checkDefined(pA,["c","d"]))
+			clearInterval(Machine.interval)
+			throw "Error with strokeLine"
+	}
 	this.beginPath()
 	this.moveTo(a,b)
 	this.lineTo(c,d)
 	this.stroke()
 }
 
+CanvasRenderingContext2D.prototype.fillCircle=function(a,b,c) {
+	this.beginPath()
+	this.arc(a,b,c,0,Math.TAU)
+	this.fill()
+}
+
 CanvasRenderingContext2D.prototype.strokeCircle=function(a,b,c) {
 	this.beginPath()
-	this.arc(a,b,c,0,2*Math.PI)
+	this.arc(a,b,c,0,Math.TAU)
 	this.stroke()
 }
 
@@ -79,7 +109,6 @@ Machine.adjust=function(name,value) {
 	var splitName=name.split("-")
 	Machine.children[splitName[1].split(":")[1]][splitName[2]]=parseFloat(value)
 }
-
 Machine.add=function() {
 	var pa=pyarg({"machineName":undefined, "variables":undefined}, arguments)
 	if (!pa["machineName"]) {
@@ -97,6 +126,7 @@ Machine.add=function() {
 	child.canvas.height=child.container.offsetHeight
 	child.w=child.canvas.width
 	child.h=child.canvas.height
+	child.s=[child.w,child.h]
 	child.L=Math.max(child.h,child.w)
 	if(pa["variables"]) {
 		for(variable in pa["variables"]) {
@@ -139,10 +169,12 @@ Machine.update=function() {
 		child.canvas.height=child.container.offsetHeight
 		child.w=child.canvas.width
 		child.h=child.canvas.height
+		child.s=[child.w,child.h]
 		child.update(Machine.iteration)
 		child.draw()
 	}
 	Machine.iteration++
 }
 
-window.setInterval(Machine.update,20)
+Machine.interval=window.setInterval(Machine.update,20)
+}
