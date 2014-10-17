@@ -97,7 +97,7 @@ var Machine={
 			Machine.children[Machine._names[n]] :
 			undefined
 	},
-	"byName":function(name){return Machine.children[name]},
+	"byName":function(name){return Machine.children[name]}
 }
 
 Machine.Err=function() {
@@ -169,9 +169,11 @@ Machine.update=function() {
 		child.canvas.height=child.container.offsetHeight
 		child.w=child.canvas.width
 		child.h=child.canvas.height
+		child.L=Math.max(child.w,child.h)
+		child.l=Math.max(child.w,child.h)
 		child.s=[child.w,child.h]
-		child.update(Machine.iteration)
 		child.draw()
+		child.update(Machine.iteration)
 	}
 	Machine.iteration++
 }
