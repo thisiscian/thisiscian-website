@@ -49,62 +49,88 @@ function bezierCurve(start, control1, control2, end) {
  */
 function flower() {
 	var this_=this;
-	this_.T=0
+	function layerRadius(depth) {
+		var l=this_.__layerRadii.length
+		while(l<=depth) {
+			this_.__layerRadii[l]=this_.__layerRadii[l-1]+l
+			l=this_.__layerRadii.length
+		}
+		return Math.sqrt(2)*this_.scale*this_.__layerRadii[depth]
+	}
+	this_.__layerRadii=[0,1]
+	this_.petalCount=36
+	this_.speed=0.003
+	this_.scale=100
+	this_.rotateSpeed=0.0002
+
+	this_.recordingCanvas=true
+	this_.frameData=[]
+	this_.layers=0
+
 	this_.t=0
-	this_.i=0
-	this_.petalCount=18
 	this_.petal=[]
-	this_.stopRecord=0
-	this_.record=[]
-	var fact=[0,1]//,3,7,15,31]
-	var a=100
+
 	this_.initialise=function() {
-		this_.container.style.backgroundColor="white"
+		this_.container.style.backgroundColor="black"
 		this_.context.strokeStyle="black"
 		this_.context.fillStyle="black"
-		this_.context.lineWidth="10px"
+		this_.update()
 		for(var i=0; i<this_.petalCount; i++) {
 			this_.petal[i]=[]
 			var j=0
-			while(this_.L>fact[j]*2*a && j<fact.length) {
-				var x=a*fact[j]
-				var y=a*fact[j+1]
-				this_.petal[i][j]=new bezierCurve([x,x],[(y+x)/2,x],[(y+x)/2,y],[y,y])
+			while(layerRadius(j)<=this_.l/2.5) {
+				var r=layerRadius(j), R=layerRadius(j+1)
+				this_.petal[i][j]=new bezierCurve([r,r],[(r+R)/2,r],[(r+R)/2,R],[R,R])
 				j++
 			}
+			this_.layers=j
 		}
 	}
+
 	this_.update=function() {
-		this_.i+=1
-		this_.T=0.01*this_.i
-		if(this_.T>=1) { this_.T=this_.T%1; this_.i=0; this_.stopRecord=1; }
-		this_.t=2*Math.pow(this_.T,2)-Math.pow(this_.T,4)
-	}
-	function LovelyBezier(i) {
-		for(var j=0; j<this_.petal[i].length; j++) {
-			this_.petal[i][j].path(this_.context)
-			this_.petal[i][j].partPath(this_.context,this_.t)
-			this_.petal[i][j].partPath(this_.context,1-this_.t)
-			this_.petal[i][j].rpartPath(this_.context,this_.t)
-			this_.petal[i][j].rpartPath(this_.context,1-this_.t)
+		if(this_.petal.length<this_.petalCount) {
 		}
+
+		if(this_.i*this_.speed > 1) { this_.recordingCanvas=false }
+		var T=(this_.i*this_.speed)%1
+		this_.t=2*Math.pow(T,2)-Math.pow(T,4)
 	}
+
 	this_.draw=function() {
-		if(this_.stopRecord==1) {
-			this_.context.putImageData(this_.record[this_.i],0,0)
+		if(!this_.recordingCanvas) {
+			this_.context.putImageData(this_.frameData[this_.i%this_.frameData.length],0,0)
 			return 0
 		}
 		this_.context.translate(this_.w/2,this_.h/2)
-		this_.context.rotate(Math.PI*this_.T)
+		var grd=this_.context.createRadialGradient(0,0,0,0,0,this_.l/2.5);
+		var dist=0.8*Math.abs(this_.t-0.5)
+		var distinv=dist+0.05
+		grd.addColorStop(0,"black");
+		grd.addColorStop(dist,"#9da");
+		grd.addColorStop(distinv,"#d9a");
+		grd.addColorStop(0.55,"black")
+
+		// Fill with gradient
+		this_.context.fillStyle=grd;
+		this_.context.fillRect(-this_.L/2,-this_.L/2,this_.L,this_.L);
+
+		this_.context.rotate(Math.TAU*this_.i*this_.rotateSpeed)
 		this_.context.beginPath()
 		for(var i=0; i<this_.petalCount; i++) {
-			LovelyBezier(i)
-			this_.context.rotate(2*Math.PI/this_.petalCount)
+			for(var j=0; j<this_.petal[i].length; j++) {
+				this_.petal[i][j].path(this_.context)
+				this_.petal[i][j].partPath(this_.context,this_.t)
+				this_.petal[i][j].partPath(this_.context,1-this_.t)
+				this_.petal[i][j].rpartPath(this_.context,this_.t)
+				this_.petal[i][j].rpartPath(this_.context,1-this_.t)
+			}
+			this_.context.rotate(Math.TAU/this_.petalCount)
 		}
 		this_.context.stroke()
-		this_.context.strokeCircle(0,0,141)
-		this_.context.strokeCircle(0,0,3*141)
-		this_.record[this_.i]=this_.context.getImageData(0,0,this_.w,this_.h)
+		for(var i=1; i<this_.layers; i++) {
+			this_.context.strokeCircle(0,0,layerRadius(i))
+		}
+		this_.frameData[this_.i]=this_.context.getImageData(0,0,this_.w,this_.h)
 	}
 	
 }

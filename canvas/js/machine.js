@@ -127,7 +127,9 @@ Machine.add=function() {
 	child.w=child.canvas.width
 	child.h=child.canvas.height
 	child.s=[child.w,child.h]
+	child.l=Math.min(child.h,child.w)
 	child.L=Math.max(child.h,child.w)
+	child.i=0
 	if(pa["variables"]) {
 		for(variable in pa["variables"]) {
 			if(child.adjustable[variable]) {
@@ -173,6 +175,7 @@ Machine.update=function() {
 		child.l=Math.max(child.w,child.h)
 		child.s=[child.w,child.h]
 		child.draw()
+		child.i++
 		child.update(Machine.iteration)
 	}
 	Machine.iteration++
